@@ -23,9 +23,9 @@ Git Status in the Bash Prompt
   
   in my ~/tmp directory (untracked):
   
-    mortis@kburton-lin ~/tmp[---]$
+    kburton@kburton-lin ~/tmp[---]$
   
   in a clean sub (git) project directory (branch is master):
   
-    mortis@kburton-lin ~/projects/krb-bash-utils[master]$
+    kburton@kburton-lin ~/projects/krb-bash-utils[master]$
   
