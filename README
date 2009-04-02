@@ -1,27 +1,31 @@
 Bash functions and customizations that I've found useful and need everywhere I
 do work in the shell.
 
-- Git Status in the Bash Prompt
+Git Status in the Bash Prompt
+========================================
 
-This is based off of the example from gitready.com:
-
-  http://henrik.nyh.se/2008/12/git-dirty-prompt
-
-I keep my $HOME directories checked in to their own Git repository, with a
-branch named `home'.  I've added a check so the prompt shows not just which
-branch, but a `[---]' when I'm in a directory not tracked by the current git
-repository.
-
-Eg, in a clean $HOME:
-
-  kburton@kburton-lin ~[home]$
-
-in a dirty $HOME:
-
-  kburton@kburton-lin ~[home]$
-
-in my ~/tmp directory (untracked):
-
-  mortis@kburton-lin ~/tmp[---]$
-
-
+  This is based off of the example from gitready.com:
+  
+    http://henrik.nyh.se/2008/12/git-dirty-prompt
+  
+  I keep my $HOME directories checked in to their own Git repository, with a
+  branch named `home'.  I've added a check to the above so the prompt shows not
+  just which branch, but a `[---]' when I'm in a directory not tracked by the
+  current git repository.
+  
+  Eg, in a clean $HOME:
+  
+    kburton@kburton-lin ~[home]$
+  
+  in a dirty $HOME:
+  
+    kburton@kburton-lin ~[home*]$
+  
+  in my ~/tmp directory (untracked):
+  
+    mortis@kburton-lin ~/tmp[---]$
+  
+  in a clean sub (git) project directory (branch is master):
+  
+    mortis@kburton-lin ~/projects/krb-bash-utils[master]$
+  
