@@ -1,14 +1,19 @@
 #
-# Git Prompt, based off of 
+# Git Prompt, based off of http://henrik.nyh.se/2008/12/git-dirty-prompt
 #
+
+
+# Returns 0 (success) if the pwd is tracked, otherwise 1 (failure)
 function git_pwd_is_tracked {
    [ $(git log -1 --pretty=oneline  . | wc -l) -eq "1" ]
 }
 
+# Emits `*' if the current repository is `dirty' (untracked files or uncommited changes in the index)
 function parse_git_dirty {
   [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "*"
 }
 
+# Emits the name of the current git branch or `---' if the pwd is untracked
 function parse_git_branch {
   if git_pwd_is_tracked; then
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/[\1$(parse_git_dirty)]/"
