@@ -3,9 +3,9 @@
 #
 
 
-# Returns 0 (success) if the pwd is tracked, otherwise 1 (failure)
+# emits '-' if the pwd is untracked, otherwise nothing
 function git_pwd_is_tracked {
-   [ $(git log -1 --pretty=oneline  . | wc -l) -eq "1" ]
+   [ $(git log -1 --pretty=oneline  . | wc -l) -eq "1" ] || echo "<-"
 }
 
 # Emits `*' if the current repository is `dirty' (untracked files or uncommited changes in the index)
@@ -15,11 +15,7 @@ function parse_git_dirty {
 
 # Emits the name of the current git branch or `---' if the pwd is untracked
 function parse_git_branch {
-  if git_pwd_is_tracked; then
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/[\1$(parse_git_dirty)]/"
-  else
-    printf "[---]"
-  fi
+  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/[$(git_pwd_is_tracked)\1$(parse_git_dirty)]/"
 }
 
 export PS1='\u@\h \[\033[1;33m\]\w\[\033[0m\]$(parse_git_branch)$ '
