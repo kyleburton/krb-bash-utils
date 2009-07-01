@@ -5,7 +5,7 @@
 
 # emits '-' if the pwd is untracked, otherwise nothing
 function git_pwd_is_tracked {
-   [ $(git log -1 --pretty=oneline  . | wc -l) -eq "1" ] || echo "<-"
+   [ $(git log -1 --pretty=oneline . 2>/dev/null | wc -l) -eq "1" ] || echo "<-"
 }
 
 # Emits `*' if the current repository is `dirty' (untracked files or uncommited changes in the index)
