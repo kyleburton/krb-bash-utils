@@ -1,0 +1,28 @@
+[alias]
+        a = add
+        au = add -u
+        b = branch
+        br = branch
+        cia = commit -av
+        ci = commit -v
+        co = checkout
+        dc = diff --cached
+        d = diff
+        df = diff
+        lg = log -p
+        pt = add --patch
+        spull = !git-svn fetch && git-svn rebase --local
+        spush = !git-svn dcommit
+        s = status
+        sta = status
+        stat = status
+        st = status
+        ls = status
+[user]
+	name = Kyle Burton
+	email = kyle.burton@gmail.com
+[color]
+        ui = auto
+        diff = auto
+        status = auto
+        interactive = auto
