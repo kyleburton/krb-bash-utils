@@ -1,0 +1,323 @@
+# -*- shell-script -*-
+
+#
+# Collected shell (bash) utilities.  This is a collection of shell
+# utilities I've used in building software, maintaining my systems and
+# doing simple data processing at the shell.
+#
+# author: Kyle Burton <kyle.burton@gmail.com>
+#
+#  http://github.com/kyleburton/sandbox/rc-files
+#
+
+#
+# xargs grep:  find . -type f | xargs grep some-token
+#
+function xg () {
+  xargs grep "$@"
+}
+
+#
+# 'find files': find . -type f
+#
+# NB: in each of these 'find' commands, if the first argument exists a
+# directory, it is taken as the location to search, the next argument
+# is taken as the pattern (when a pattern is used) and any remaining
+# arguments are passed to the last command in the pipeline.
+#
+function ff () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  find "$DIR" -type f "$@"
+}
+
+#
+# Find files named 'X', where 'X' is automatically surrounded by
+# wildcards so it can occurr anywhere within the name of the files.
+#
+#   find . -type f -name '*X*'
+#
+function ffn () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  find "$DIR" -type f -name "*$1*"
+}
+
+# case insensitive version of ffn
+function ffni () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  find "$DIR" -type f -iname "*$1*"
+}
+
+# 'find directories'
+function fd () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  find "$DIR" -type d "$@"
+}
+
+# find directories named
+function fdn () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  find "$DIR" -type d -name "*$1*"
+}
+
+# case insensitive version of fdn
+function fdni () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  find "$DIR" -type d -iname "*$1*"
+}
+
+# 'find clojure files', like ffn, but automatically appends a '.clj' suffix on the pattern.
+function fclj () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  PAT="*.clj"
+  if [ -n "$1" ]; then
+      PAT="*$1*.clj"
+      shift
+  fi
+  find "$DIR" -type f -name "$PAT" "$@"
+}
+
+# case insensitive version of fclj
+function fclji () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  PAT="*.clj"
+  if [ -n "$1" ]; then
+      PAT="*$1*.clj"
+      shift
+  fi
+  find "$DIR" -type f -iname "$PAT" "$@"
+}
+
+# 'find java files'
+function fj () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  PAT="*.java"
+  if [ -n "$1" ]; then
+      PAT="*$1*.java"
+      shift
+  fi
+  find "$DIR" -type f -name "$PAT" "$@"
+}
+
+# case insensitive version of fj
+function fji () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  PAT="*.java"
+  if [ -n "$1" ]; then
+      PAT="*$1*.java"
+      shift
+  fi
+  find "$DIR" -type f -iname "$PAT" "$@"
+}
+
+# 'find ruby files'
+function fr () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  PAT="*.rb"
+  if [ -n "$1" ]; then
+      PAT="*$1*.rb"
+      shift
+  fi
+  find "$DIR" -type f -name "$PAT" "$@"
+}
+
+# case insensitive version of fr
+function fri () {
+  DIR="."
+  if [ -d "$1" ]; then
+    DIR="$1"
+    shift
+  fi
+  PAT="*.rb"
+  if [ -n "$1" ]; then
+      PAT="*$1*.rb"
+      shift
+  fi
+  find "$DIR" -type f -iname "$PAT" "$@"
+}
+
+# combinations of the various find commands followed by a pipe to xargs grep
+function fcljxg () {
+  fclj -print0 | xargs -0 grep "$@"
+}
+
+function fcljixg () {
+  fclji -print0 | xargs -0 grep "$@"
+}
+
+function fjxg () {
+  fj -print0 | xargs -0 grep "$@"
+}
+
+function fjixg () {
+  fji -print0 | xargs -0 grep "$@"
+}
+
+function frxg () {
+  fr -print0   | xargs -0 grep "$@"
+}
+
+function frixg () {
+  fri -print0 | xargs -0 grep "$@"
+}
+
+# various maven shortcuts
+function mvno  () {
+  mvn -o "$@"
+}
+
+function mvnoc  () {
+  mvn -o compile "$@"
+}
+
+function mvnc   () {
+  mvn compile "$@"
+}
+
+function mvnt   () {
+  mvn -Dmaven.test.skip=true -DskipTests "$@"
+}
+
+function mvnot  () {
+  mvn -o -Dmaven.test.skip=true -DskipTests "$@"
+}
+
+function mvni   () {
+  mvn install "$@"
+}
+
+function mvnoi  () {
+  mvn -o install "$@"
+}
+
+# very simple, hard-coded, completion for common maven commands and options.
+complete -o default -W "generate-sources jar:jar assembly:assembly validate compile test package integration-test verify install deploy -DskipTests -Dmaven.test.skip=true" mvn
+
+#
+# Shell based data processing utilities, these all use standard unix
+# utilities that nearly all expect tab-delimited input and produce tab
+# delimited output.
+#
+
+# Header preseving grep, very useful for database table dumps as well as delimited and fixed width data files.
+function hgrep () {
+  FILE="$1"
+  shift
+  (head -n 1 "$FILE"; tail -n +2 "$FILE" | grep "$@")
+}
+
+function hgrepi () {
+  FILE="$1"
+  shift
+  (head -n 1 "$FILE"; tail -n +2 "$FILE" | grep -i "$@")
+}
+
+# header preserving sort
+function hsort () {
+  FILE="$1"
+  shift
+  (head -n 1 "$FILE"; tail -n +2 "$FILE" | sort "$@")
+}
+
+# header preserving tail
+function htail () {
+  FILE="$1"
+  shift
+  (head -n 1 "$FILE"; tail -n +2 "$FILE" | tail "$@")
+}
+
+# test if any of the given files (or directories) exist
+function any_exists () {
+  if [ -z "$1" ]; then
+    return -1
+  fi
+  if [ -e "$1" ]; then
+    return 0
+  fi
+
+  shift
+  any_exists $@
+}
+
+# jump back to project root
+function proot () {
+  # project root is defined as the first directory (going back toward the root)
+  # containing one of the following
+  #   .git
+  #   Makefile, makefile
+  #   Rakefile
+  #   pom.xml
+  FILES=".git Makefile makefile Rakefile pom.xml"
+  if any_exists $FILES; then
+    echo "Project Root: `pwd`"
+    return
+  fi
+
+  if [ "$(pwd)" == "$HOME" ]; then
+    echo "Project Root not found"
+    return
+  fi
+
+  cd ..
+  proot
+}
+
+
+function mroot () {
+  FILES=".git pom.xml"
+  if any_exists $FILES; then
+    echo "Maven Project Root: `pwd`"
+    return
+  fi
+
+  if [ "$(pwd)" == "$HOME" ]; then
+    echo "Maven Project Root not found"
+    return
+  fi
+
+  cd ..
+  proot
+}

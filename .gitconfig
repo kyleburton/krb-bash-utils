@@ -1,28 +1,29 @@
-[alias]
-        a = add
-        au = add -u
-        b = branch
-        br = branch
-        cia = commit -av
-        ci = commit -v
-        co = checkout
-        dc = diff --cached
-        d = diff
-        df = diff
-        lg = log -p
-        pt = add --patch
-        spull = !git-svn fetch && git-svn rebase --local
-        spush = !git-svn dcommit
-        s = status
-        sta = status
-        stat = status
-        st = status
-        ls = status
 [user]
-	name = Kyle Burton
-	email = kyle.burton@gmail.com
+        email = kyle.burton@gmail.com
+        name = Kyle Burton
 [color]
         ui = auto
         diff = auto
         status = auto
         interactive = auto
+        branch = auto
+[alias]
+        st = status
+        au = add -u
+        pt = add --patch
+        ci = commit -v
+        cia = commit -av
+        br = branch
+        co = checkout
+        df = diff
+        dfc = diff --cached
+        dft = difftool --tool=vimdiff -U99999
+        spull = !git-svn fetch && git-svn rebase --local
+        spush = !git-svn dcommit
+        pull-all = !git submodule foreach git pull origin master
+        pob = !bash -l -c "'git pull origin $(parse_git_branch)'"
+        pub = !bash -l -c "'git push origin $(parse_git_branch)'"
+        pom = pull origin master
+        pum = push origin master
+        lg = log -p
+
