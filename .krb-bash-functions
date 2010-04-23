@@ -321,3 +321,40 @@ function mroot () {
   cd ..
   proot
 }
+
+function is_osx () {
+  uname -a | grep -q ^Darwin
+}
+
+function open_file () {
+  if is_osx; then
+    open "$@"
+  else
+    echo "Error(krb-bash-functions:open_file): unknown platform? => `uname -a`"
+  fi
+}
+
+function view_markup () {
+  FILE="$1"
+  echo "$FILE ${FILE#*.}"
+  if      [ "md" = "${FILE#*.}" ]; then
+    echo "treating $FILE as markdown (maruku)"
+    maruku "$FILE"
+    OUT_FILE="`basename $1 .md`.html"
+    open_file "$OUT_FILE"
+    return $?
+  fi
+
+  if [ "textile" = "${FILE#*.}" ]; then
+    echo "treating $FILE as textile (redcloth)"
+    OUT_FILE="`basename $1`.html"
+    redcloth "$FILE" > "$OUT_FILE"
+    open_file "$OUT_FILE"
+    return $?
+  fi
+
+  echo "Not a recognized markup type, just invoking open_file($FILE)"
+  open_file "$FILE"
+}
+
+
